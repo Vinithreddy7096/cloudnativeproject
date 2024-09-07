@@ -12,6 +12,7 @@ def index():
     print("GET /")
 
     index_html = """
+    <body style="background-color: rgb(64,224,208);">
     <form method="post" enctype="multipart/form-data" action="/upload" method="post">
       <div>
         <label for="file">Choose file to upload</label>
