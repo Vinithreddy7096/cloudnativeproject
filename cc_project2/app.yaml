@@ -1,0 +1,10 @@
+runtime: python39
+
+entrypoint: gunicorn -b :$PORT finalCode:app
+
+handlers:
+- url: /.*
+  script: auto
+
+env_variables:
+  FLASK_ENV: development
