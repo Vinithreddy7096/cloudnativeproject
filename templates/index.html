@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <style>
+        /* General page styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Main container for the website */
+        .app-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px; /* Fixed width for desktop-like website */
+            padding: 40px;
+            margin: 0 auto;
+        }
+
+        /* Header styling */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #34495e;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        /* Form styling */
+        form {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+            margin-right: 20px;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 60%;
+        }
+
+        button {
+            padding: 8px 16px; /* Decreased padding */
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px; /* Reduced font size */
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Uploaded files section */
+        .file-section {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        li img {
+            max-width: 200px; /* Increased image size */
+            border-radius: 8px;
+            margin-right: 20px;
+        }
+
+        li a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            flex-grow: 1;
+        }
+
+        li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Delete button */
+        form[method="POST"] button {
+            background-color: #dc3545;
+            padding: 6px 12px; /* Smaller delete button */
+            font-size: 12px; /* Smaller font size */
+        }
+
+        form[method="POST"] button:hover {
+            background-color: #c82333;
+        }
+
+        /* Logout button */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        a.logout {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #ffc107;
+            color: #333;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        a.logout:hover {
+            background-color: #e0a800;
+        }
+
+        /* Responsive styling */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 20px;
+            }
+
+            form {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            input[type="file"] {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            li img {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Upload and View Images</h1>
+        </header>
+
+        <form method="post" enctype="multipart/form-data" action="/upload">
+            <label for="file">Choose file to upload</label>
+            <input type="file" id="file" name="form_file" accept="image/jpeg,image/jpg,image/png" />
+            <button type="submit">Submit</button>
+        </form>
+
+        <div class="file-section">
+            <h2>Uploaded Files</h2>
+            <ul>
+                {% for file in files %}
+                {% if file.lower().endswith('.jpg') or file.lower().endswith('.jpeg') or file.lower().endswith('.png') %}
+                <li>
+                    <a href="/files/{{ file }}">{{ file }}</a>
+                    <img src="/image/{{ file }}" alt="{{ file }}">
+                    <div>
+                        <p>
+                            {% if file in description_data_list %}
+                                {{ description_data_list[file] }}
+                            {% else %}
+                                No description available.
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('delete_file', filename=file) }}">
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this file?');">Delete</button>
+                    </form>
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <footer>
+            <a href="/logout" class="logout">Logout</a>
+        </footer>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+Flask==2.3.3
+Pillow==10.0.0
+gunicorn
+Flask-Login==0.6.3
+google-cloud-storage==2.10.0
+google-generativeai
+requests==2.31.0
