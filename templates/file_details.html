@@ -93,13 +93,6 @@
             {% for label, value in info_dict.items() %}
                 <tr><td>{{ label }}</td><td>{{ value }}</td></tr>
             {% endfor %}
-            {% if exifdata %}
-                {% for tag_name, value in exifdata.items() %}
-                    <tr><td>{{ tag_name }}</td><td>{{ value }}</td></tr>
-                {% endfor %}
-            {% else %}
-                <tr><td>EXIF Data</td><td>Not available</td></tr>
-            {% endif %}
         </table>
 
         <a href="/">Back to Home</a>

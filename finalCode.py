@@ -1,15 +1,12 @@
 from flask import Flask, redirect, request, send_file, render_template, flash, url_for
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from google.cloud import storage
-import io
-from PIL import Image, ExifTags
 import os
 import logging
 import google.generativeai as genai
 import json
-import requests  # Added for downloading files from URLs
-import base64
-
+import requests
+import io  # Added for downloading files from URLs
 
 app = Flask(__name__)
 app.config['template_folder'] = '/home/vinithreddy_nagelly1999/cloudnativeproject/cc_project2/templates'
@@ -87,7 +84,7 @@ def generate_image_description(uploaded_file):
         response = chat_session.send_message({
             "parts": [
                 image_data,
-                "Please provide a title and detailed description for this image in JSON format."
+                "Please provide a title and description for the image."
             ]
         })
 
@@ -162,31 +159,14 @@ def get_file(filename):
         flash("You don't have access to this file.")
         return redirect('/')
 
-    blob = bucket.blob(filename)
-    image_bytes = blob.download_as_bytes()
-    image = Image.open(io.BytesIO(image_bytes))
-    exifdata = image._getexif()
-
+    # Provide a default info_dict as a dictionary
     info_dict = {
         "Filename": filename,
-        "Image Size": image.size,
-        "Image Height": image.height,
-        "Image Width": image.width,
-        "Image Format": image.format,
-        "Image Mode": image.mode,
-        "Image is Animated": getattr(image, "is_animated", False),
-        "Frames in Image": getattr(image, "n_frames", 1)
+        "File URL": f"/image/{filename}",
     }
 
-    exif_dict = {}
-    if exifdata:
-        for tag_id, value in exifdata.items():
-            tag_name = ExifTags.TAGS.get(tag_id, tag_id)
-            exif_dict[tag_name] = value
-    else:
-        exif_dict = {"Error": "No EXIF data available"}
+    return render_template('file_details.html', filename=filename, info_dict=info_dict)
 
-    return render_template('file_details.html', filename=filename, info_dict=info_dict, exifdata=exif_dict)
 
 @app.route('/image/<filename>')
 @login_required
